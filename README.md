@@ -38,8 +38,6 @@ Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkç�
 2. `deneme.html` dosyasını bir tarayıcıda açın.
 3. Oyun hemen çalışmaya başlayacaktır.
 
-> **Not:** Tüm görseller ve ses dosyaları `assets` klasöründe olmalıdır. Dosya yollarını kendi yapınıza göre güncelleyebilirsiniz.
-
 ## Ekran Görüntüleri
 
 ![Oyun Ekranı](assets/ekran_goruntusu.png)
