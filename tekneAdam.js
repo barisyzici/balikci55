@@ -1,26 +1,41 @@
+// tekneAdam karakteri sınıfı
 class TekneAdam {
   constructor() {
-    this.width = 100;
-    this.height = 100;
-    this.x = 0;  // başlangıç solda
-    this.y = canvas.height - this.height - 20; // dipte konumlandır
-    this.speed = 3;
-    this.image = new Image();
-    this.image.src = 'assets/tekne_adam.png'; // Tekne+adam görseli
+    // Teknenin boyutu ve başlangıç konumu
+    this.genislik = 100;
+    this.yukseklik = 100;
+    this.x = 0; 
+    this.y = tuval.height - this.yukseklik - 20; 
+    this.hiz = 3;
+    // tekneAdam görseli
+    this.resim = new Image();
+    this.resim.src = 'assets/tekne_adam.png';
   }
 
-  draw() {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  // Tekneyi ekrana çizer
+  ciz() {
+    cizim.drawImage(this.resim, this.x, this.y, this.genislik, this.yukseklik);
   }
 
-  update(keys) {
-    // Sadece sağa ve sola hareket etsin
-    if (keys['ArrowRight'] && this.x + this.width < canvas.width) this.x += this.speed;
-    if (keys['ArrowLeft'] && this.x > 0) this.x -= this.speed;
+  // Teknenin sağa ve sola hareketini günceller
+  guncelle(tuslar) {
+    if (tuslar['ArrowRight'] && this.x + this.genislik < tuval.width) this.x += this.hiz;
+    if (tuslar['ArrowLeft'] && this.x > 0) this.x -= this.hiz;
   }
 
-  isAtLeftEdge() {
-    return this.x <= 5;  // Teknenin en soluna gelmiş mi kontrolü
+  // Tekne en solda mı kontrolü
+  soldaMi() {
+    return this.x <= 5;
+  }
+
+  // Tekne en sağda mı kontrolü
+  sagdaMi() {
+    return this.x + this.genislik >= tuval.width - 5;
+  }
+
+  // Tekne ortada mı kontrolü
+  ortadaMi() {
+    const merkezX = tuval.width / 2;
+    return Math.abs(this.x + this.genislik / 2 - merkezX) < 50;
   }
 }
-
