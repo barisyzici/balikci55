@@ -51,7 +51,7 @@ Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkç�
 
 ## Tasarım 
 - [Tasarımlar](https://free-game-assets.itch.io/free-fishing-pixel-art-pack)
-- Tasarımlar Adobe Photoshop uygulamasıyla çizildi ve düzenlendi.
+- Diğer görseller Adobe Photoshop uygulamasıyla çizildi ve düzenlendi.
 
 ## Kullanılan Sesler
 - [Arka plan Müziği](https://www.youtube.com/watch?v=yEorHVdQdCQ)
