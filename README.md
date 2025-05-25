@@ -4,7 +4,7 @@ Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkç�
 
 ## OYUN
 
-[![Balikci Gorsel](assets/oyun-gorseli/tersane_ekrani.png)](https://barisyzici.github.io/fisherman/)
+[![Balikci Gorsel](assets/oyun-gorseli/fisherman.png)](https://barisyzici.github.io/fisherman/)
 
 Balıkcıya tıklayarak oyuna ulaşabilirsiniz.
 
