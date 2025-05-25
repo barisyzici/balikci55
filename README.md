@@ -32,12 +32,6 @@ Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkç�
 - **1:** Tersanede tekne hızını artır (100₺)
 - **2:** Tersanede balık kapasitesini artır (150₺, max 15)
 
-## Kurulum ve Çalıştırma
-
-1. Proje dosyalarını bir klasöre çıkarın.
-2. `deneme.html` dosyasını bir tarayıcıda açın.
-3. Oyun hemen çalışmaya başlayacaktır.
-
 ## Ekran Görüntüleri
 
 ![Oyun Ekranı](assets/ekran_goruntusu.png)
