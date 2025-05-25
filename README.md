@@ -2,6 +2,13 @@
 
 Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkçı simülasyon oyunudur. Oyunda teknenizi sağa/sola hareket ettirip balık tutabilir, balıklarınızı satabilir ve kazandığınız parayla teknenizi geliştirebilirsiniz.
 
+## OYUN
+
+[![Balikci Gorsel](assets/oyun-gorseli/tersane_ekrani.png)](https://barisyzici.github.io/fisherman/)
+
+Balıkcıya tıklayarak oyuna ulaşabilirsiniz.
+
+
 ## Özellikler
 
 - Sağ/sol ok tuşları ile tekneyi hareket ettirme
