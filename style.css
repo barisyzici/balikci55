@@ -1,11 +1,13 @@
+/* Sayfa genel stil ayarları */
 body {
     margin: 0;
     overflow: hidden;
-    background: linear-gradient(to bottom, #99c1e9, #569cdd);
-  }
+    background: linear-gradient(to bottom, #99c1e9, #569cdd); /* Arka plan gradyanı */
+}
   
- canvas {
-  display: block;
-  margin: auto;
-  background-color: #569cdd; 
+/* Oyun için stil ayarları */
+canvas {
+    display: block;
+    margin: auto;
+    background-color: #569cdd; /* Arka plan JS ile çizildiği için sadece renk */
 }
