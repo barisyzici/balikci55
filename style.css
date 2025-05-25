@@ -1,4 +1,3 @@
-/* style.css */
 body {
     margin: 0;
     overflow: hidden;
@@ -8,5 +7,5 @@ body {
  canvas {
   display: block;
   margin: auto;
-  background-color: #569cdd; /* arka plan JS ile çizildiği için sadece renk */
+  background-color: #569cdd; 
 }
