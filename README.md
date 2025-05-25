@@ -1,4 +1,4 @@
-# Balıkçı Oyunu
+# FISHERMAN
 
 Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkçı simülasyon oyunudur. Oyunda teknenizi sağa/sola hareket ettirip balık tutabilir, balıklarınızı satabilir ve kazandığınız parayla teknenizi geliştirebilirsiniz.
 
