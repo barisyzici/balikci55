@@ -40,6 +40,8 @@ Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkç�
 ![Satış Ekranı](assets/oyun-gorseli/satis_ekrani.png)
 ![Tersane Ekranı](assets/oyun-gorseli/tersane_ekrani.png)
 
+- [Oynanis Videosu](https://www.youtube.com/watch?v=fMGC2zpsUvE)
+
 ## Kullanılan Teknolojiler
 - HTML5
 - CSS
