@@ -40,7 +40,9 @@ Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkç�
 ![Satış Ekranı](assets/oyun-gorseli/satis_ekrani.png)
 ![Tersane Ekranı](assets/oyun-gorseli/tersane_ekrani.png)
 
-- [Oynanis Videosu](https://www.youtube.com/watch?v=fMGC2zpsUvE)
+## Oynanış Videosu
+
+- [Oynanış Videosu](https://www.youtube.com/watch?v=fMGC2zpsUvE)
 
 ## Kullanılan Teknolojiler
 - HTML5
@@ -58,8 +60,4 @@ Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkç�
 
 ## Katkı ve Lisans
 
-Bu proje eğitim ve eğlence amaçlıdır. Katkıda bulunmak isterseniz pull request gönderebilirsiniz.
-
----
-
-**İyi eğlenceler!**
+Örnek alınan oyun: [Scale the Depths](https://serpexnessie.itch.io/scale-the-depths)
