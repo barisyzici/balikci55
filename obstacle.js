@@ -1,50 +1,55 @@
-const fishTypes = [
+// Oyun için balık türleri dizisi
+const balikTurleri = [
   {
-    name: 'Küçük Balık',
-    imageSrc: 'assets/fish_small.png',
-    width: 40,
-    height: 40,
-    speed: 2,
-    value: 5
+    ad: 'Küçük Balık',
+    resimYolu: 'assets/fish_small.png',
+    genislik: 40,
+    yukseklik: 40,
+    hiz: 2,
+    deger: 5
   },
   {
-    name: 'Orta Balık',
-    imageSrc: 'assets/fish_medium.png',
-    width: 60,
-    height: 60,
-    speed: 1.5,
-    value: 10
+    ad: 'Orta Balık',
+    resimYolu: 'assets/fish_medium.png',
+    genislik: 60,
+    yukseklik: 60,
+    hiz: 1.5,
+    deger: 10
   },
   {
-    name: 'Büyük Balık',
-    imageSrc: 'assets/fish_big.png',
-    width: 80,
-    height: 80,
-    speed: 1,
-    value: 20
+    ad: 'Büyük Balık',
+    resimYolu: 'assets/fish_big.png',
+    genislik: 80,
+    yukseklik: 80,
+    hiz: 1,
+    deger: 20
   }
 ];
 
-class Obstacle {
+// Engel (balık) sınıfı
+class Engel {
   constructor(x) {
-    const randomType = fishTypes[Math.floor(Math.random() * fishTypes.length)];
-    this.fishType = randomType;
-    this.width = randomType.width;
-    this.height = randomType.height;
+    // Rastgele bir balık türü seç
+    const rastgeleTur = balikTurleri[Math.floor(Math.random() * balikTurleri.length)];
+    this.balikTuru = rastgeleTur; // Ekle!
+    this.ad = rastgeleTur.ad;
+    this.genislik = rastgeleTur.genislik;
+    this.yukseklik = rastgeleTur.yukseklik;
     this.x = x;
     this.y = 0;
-    this.speed = randomType.speed;
-    this.image = new Image();
-    this.image.src = randomType.imageSrc;
-    this.value = randomType.value;
-    
+    this.hiz = rastgeleTur.hiz;
+    this.resim = new Image();
+    this.resim.src = rastgeleTur.resimYolu;
+    this.deger = rastgeleTur.deger;
   }
 
-  draw() {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  // Balığı ekrana çizer
+  ciz() {
+    cizim.drawImage(this.resim, this.x, this.y, this.genislik, this.yukseklik);
   }
 
-  update() {
-    this.y += this.speed;
+  // Balığın konumunu günceller (aşağıya hareket)
+  guncelle() {
+    this.y += this.hiz;
   }
 }
