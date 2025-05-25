@@ -1,601 +1,589 @@
-const startBtn = document.getElementById('startBtn');
-const startOverlay = document.getElementById('startOverlay');
-const howToPlay = document.getElementById('howToPlay');
-const howToCloseBtn = document.getElementById('howToCloseBtn');
+// Oyun başlatma ve "Nasıl Oynanır" kutusu kontrolü
+const baslatButonu = document.getElementById('baslatButonu');
+const baslatKatmani = document.getElementById('baslatKatmani');
+const nasilOynanirKutusu = document.getElementById('nasilOynanirKutusu');
+const nasilKapatButonu = document.getElementById('nasilKapatButonu');
 
-if (startBtn) {
-  startBtn.onclick = function () {
-    gameStarted = true;
-    startOverlay.style.display = 'none';
-    if (howToPlay) howToPlay.style.display = 'block'; // "Nasıl Oynanır" kutusunu göster
-    backgroundMusic.play();
+if (baslatButonu) {
+  baslatButonu.onclick = function () {
+    oyunBasladi = true;
+    baslatKatmani.style.display = 'none';
+    if (nasilOynanirKutusu) nasilOynanirKutusu.style.display = 'block';
+    arkaPlanMuzik.play();
   };
 }
 
-if (howToCloseBtn) {
-  howToCloseBtn.onclick = function () {
-    if (howToPlay) howToPlay.style.display = 'none';
+if (nasilKapatButonu) {
+  nasilKapatButonu.onclick = function () {
+    if (nasilOynanirKutusu) nasilOynanirKutusu.style.display = 'none';
   };
 }
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
 
-const sellBgImage = new Image();
-sellBgImage.src = 'assets/satis_arkaplan.png'; // Kendi görsel yolunu yaz
-const waveSprite = new Image();
-waveSprite.src = 'assets/wave_sprite.png';
-const fishingSound = new Audio('assets/balik_tutma_ses.mp3');
-const uyariSound = new Audio('assets/depo_dolu.mp3');
-const yakalamaSound = new Audio('assets/balik_yakalama_ses.mp3');
-const shopBgImage = new Image();
-shopBgImage.src = 'assets/shop_arkaplan.png'; // Kendi shop arka plan görselinin yolunu yaz
+// Tuval ve çizim bağlamı
+const tuval = document.getElementById('oyunTuvali');
+const cizim = tuval.getContext('2d');
 
+// Oyun için gerekli görseller ve sesler
+const satisArkaPlanResmi = new Image();
+satisArkaPlanResmi.src = 'assets/satis_arkaplan.png';
+const dalgaSprite = new Image();
+dalgaSprite.src = 'assets/wave_sprite.png';
+const balikTutmaSesi = new Audio('assets/balik_tutma_ses.mp3');
+const uyariSesi = new Audio('assets/depo_dolu.mp3');
+const yakalamaSesi = new Audio('assets/balik_yakalama_ses.mp3');
+const dukkanArkaPlanResmi = new Image();
+dukkanArkaPlanResmi.src = 'assets/shop_arkaplan.png';
 
+const arkaPlanMuzik = new Audio('assets/arkaplan_muzik.mp3');
+arkaPlanMuzik.loop = true;
+arkaPlanMuzik.volume = 0.5;
 
-// 🎵 Arka plan müziği
-const backgroundMusic = new Audio('assets/arkaplan_muzik.mp3');
-backgroundMusic.loop = true;
-backgroundMusic.volume = 0.5;
+// Dalga animasyonu için değişkenler
+const dalgaKareGenislik = 1194;
+const dalgaKareYukseklik = 216;
+const dalgaKareSayisi = 1;
+let mevcutDalgaKare = 0;
+let dalgaKareGecikme = 0;
+const dalgaKareGecikmeMaks = 20;
 
+// Oyun durumu değişkenleri
+let oyunBitti = false;
+let oyunBasladi = false;
+let dalgaOfsetX = 0;
+let dalgaYon = 1;
+const dalgaMaksOfset = 30;
+const dalgaHiz = 0.4;
 
-const waveFrameWidth = 1194;
-const waveFrameHeight = 216;
-const waveFrameCount = 1;
-let currentWaveFrame = 0;
-let waveFrameDelay = 0;
-const waveFrameDelayMax = 20;
+let dukkanModu = false;
+let balikTutmaModu = false;
+let satisModu = false;
+let kareSayaci = 0;
+let tuslar = {};
+let balikKapasitesi = 9;
 
-let gameOver = false;
-let gameStarted = false;
-let waveOffsetX = 0;
-let waveDirection = 1; // 1: sağa, -1: sola
-const waveMaxOffset = 30;
-const waveSpeed = 0.4;
+let toplananBaliklar = [];
+let toplamSatilanBalik = 0;
+let toplamKazanilanPara = 0;
+let sonSatilanBaliklar = [];
+let satisAnimasyonIlerleme = 0;
+let satisAnimasyonMaks = 100;
+let animasyonPara = 0;
 
-let shopMode = false;
-let fishingMode = false;
-let sellingMode = false;
-let frameCount = 0;
-let keys = {};
-let fishCapacity = 9;
+let normalArkaPlanOfsetX = 0;
+const normalKaydirmaHizi = 0.3;
 
+// Arka plan ve dekor görselleri
+const solResim = new Image();
+solResim.src = 'assets/sol_foto.png';
 
-let collectedFish = [];
-let totalSoldFish = 0;
-let totalMoneyEarned = 0;
-let lastSoldFish = [];
-let sellingAnimationProgress = 0;
-let sellingAnimationMax = 100;
-let animateMoney = 0;
+const sagResim = new Image();
+sagResim.src = 'assets/sag_foto.png';
 
+const normalArkaPlan = new Image();
+normalArkaPlan.src = 'assets/arkaplan.png';
 
-let normalBackgroundOffsetX = 0;
-const normalScrollSpeed = 0.3;
+const ortaResim = new Image();
+ortaResim.src = 'assets/orta_foto.png';
 
-const leftImage = new Image();
-leftImage.src = 'assets/sol_foto.png';
+const balikTutmaArkaPlan = new Image();
+balikTutmaArkaPlan.src = 'assets/fishing_background.png';
+let balikTutmaArkaPlanOfsetY = 0;
 
-const rightImage = new Image();
-rightImage.src = 'assets/sag_foto.png';
+const satisSesi = new Audio('assets/satis_ses.mp3');
 
-const normalBackground = new Image();
-normalBackground.src = 'assets/arkaplan.png';
+// Oyun karakterleri ve engeller
+let oyuncu = new Oyuncu();
+let engeller = [];
+let engelAraligi = 90;
 
-
-const centerImage = new Image();
-centerImage.src = 'assets/orta_foto.png'; // Buraya senin görselinin yolu
-
-const fishingBackground = new Image();
-fishingBackground.src = 'assets/fishing_background.png';
-let fishingBackgroundOffsetY = 0;
-
-const sellSound = new Audio('assets/satis_ses.mp3');
-
-
-
-let player = new Player();
-let obstacles = [];
-let obstacleInterval = 90;
-
+// TekneAdam sınıfı: Tekne karakterinin hareket ve çizim işlemleri
 class TekneAdam {
   constructor() {
-    this.width = 250;
-    this.height = 250;
-    this.x = canvas.width / 2;
-    this.y = canvas.height - this.height - 125;
-    this.speed = 3;
-    this.image = new Image();
-    this.image.src = 'assets/tekne_adam.png';
+    this.genislik = 250;
+    this.yukseklik = 250;
+    this.x = tuval.width / 2;
+    this.y = tuval.height - this.yukseklik - 125;
+    this.hiz = 3;
+    this.resim = new Image();
+    this.resim.src = 'assets/tekne_adam.png';
   }
 
-  draw() {
-    if (this.image.complete) {
-      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  ciz() {
+    if (this.resim.complete) {
+      cizim.drawImage(this.resim, this.x, this.y, this.genislik, this.yukseklik);
     } else {
-      ctx.fillStyle = 'brown';
-      ctx.fillRect(this.x, this.y, this.width, this.height);
-      ctx.fillStyle = 'blue';
-      ctx.fillRect(this.x + 10, this.y + 10, this.width - 20, this.height - 20);
+      cizim.fillStyle = 'brown';
+      cizim.fillRect(this.x, this.y, this.genislik, this.yukseklik);
+      cizim.fillStyle = 'blue';
+      cizim.fillRect(this.x + 10, this.y + 10, this.genislik - 20, this.yukseklik - 20);
     }
   }
 
-  update(keys) {
-    if (keys['ArrowRight'] && this.x + this.width < canvas.width) this.x += this.speed;
-    if (keys['ArrowLeft'] && this.x > 0) this.x -= this.speed;
+  guncelle(tuslar) {
+    if (tuslar['ArrowRight'] && this.x + this.genislik < tuval.width) this.x += this.hiz;
+    if (tuslar['ArrowLeft'] && this.x > 0) this.x -= this.hiz;
   }
 
-  isAtLeftEdge() {
+  soldaMi() {
     return this.x <= 5;
   }
 
-  isAtRightEdge() {
-    return this.x + this.width >= canvas.width - 5;
+  sagdaMi() {
+    return this.x + this.genislik >= tuval.width - 5;
   }
-  isAtCenter() {
-  const centerX = canvas.width / 2;
-  return Math.abs(this.x + this.width / 2 - centerX) < 50;
-}
-
+  ortadaMi() {
+    const merkezX = tuval.width / 2;
+    return Math.abs(this.x + this.genislik / 2 - merkezX) < 50;
+  }
 }
 
 let tekneAdam = new TekneAdam();
 
+// Klavye olayları ile tuş kontrolü
 document.addEventListener('keydown', (e) => {
-  keys[e.key] = true;
+  tuslar[e.key] = true;
 });
 
 document.addEventListener('keyup', (e) => {
-  keys[e.key] = false;
+  tuslar[e.key] = false;
 });
 
-function generateObstacle() {
-  const width = 48;
-  const x = Math.random() * (canvas.width - width);
-  obstacles.push(new Obstacle(x));
+// Yeni engel (balık) üretir
+function engelUret() {
+  const genislik = 48;
+  const x = Math.random() * (tuval.width - genislik);
+  engeller.push(new Engel(x));
 }
 
-function checkCollision(a, b) {
+// Çarpışma kontrolü
+function carpistiMi(a, b) {
   return (
-    a.x < b.x + b.width &&
-    a.x + a.width > b.x &&
-    a.y < b.y + b.height &&
-    a.y + a.height > b.y
+    a.x < b.x + b.genislik &&
+    a.x + a.genislik > b.x &&
+    a.y < b.y + b.yukseklik &&
+    a.y + a.yukseklik > b.y
   );
 }
 
+// Sayaç görselleri
+const balikResmi = new Image();
+balikResmi.src = 'assets/balik.png';
 
+const paraResmi = new Image();
+paraResmi.src = 'assets/para.png';
 
-const fishImage = new Image();
-fishImage.src = 'assets/balik.png'; // Görselin yolu
+const toplamSatilanBalikResmi = new Image();
+toplamSatilanBalikResmi.src = 'assets/toplam_satilan_balik.png';
 
+// Ekranın üst kısmındaki balık, para ve toplam satılan balık sayaçlarını çizer
+function balikParaSayacCiz(cizim) {
+  const balikX = 50;
+  const balikY = 10;
+  const balikGenislik = 100;
+  const balikYukseklik = 100;
 
-const moneyImage = new Image();
-moneyImage.src = 'assets/para.png'; // Görselin yolu
-
-const totalSoldFishImage = new Image();
-totalSoldFishImage.src = 'assets/toplam_satilan_balik.png'; // Görselin yolu
-
-function drawFishAndMoneyCounter(ctx) {
-  // Balık görseli ve sayısı
-  const fishX = 50;
-  const fishY = 10;
-  const fishWidth = 100;
-  const fishHeight = 100;
-
-  if (fishImage.complete) {
-    ctx.drawImage(fishImage, fishX, fishY, fishWidth, fishHeight);
+  if (balikResmi.complete) {
+    cizim.drawImage(balikResmi, balikX, balikY, balikGenislik, balikYukseklik);
   }
 
-  // Balık sayısını görselin ortasına yaz
-  ctx.font = 'bold 24px Arial';
-  ctx.fillStyle = '#fffbea';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(
-    `${collectedFish.length}`,
-    fishX + fishWidth / 2,
-    fishY + fishHeight / 2
+  cizim.font = 'bold 24px Arial';
+  cizim.fillStyle = '#fffbea';
+  cizim.textAlign = 'center';
+  cizim.textBaseline = 'middle';
+  cizim.fillText(
+    `${toplananBaliklar.length}`,
+    balikX + balikGenislik / 2,
+    balikY + balikYukseklik / 2
   );
 
-  // Para görseli ve miktarı
-  const moneyX = fishX + fishWidth + 0;
-  const moneyY = fishY - 5;
-  const moneyWidth = 100;
-  const moneyHeight = 100;
+  const paraX = balikX + balikGenislik + 0;
+  const paraY = balikY - 5;
+  const paraGenislik = 100;
+  const paraYukseklik = 100;
 
-  if (moneyImage.complete) {
-    ctx.drawImage(moneyImage, moneyX, moneyY + 6, moneyWidth, moneyHeight);
+  if (paraResmi.complete) {
+    cizim.drawImage(paraResmi, paraX, paraY + 6, paraGenislik, paraYukseklik);
   }
 
-  // Para miktarını para görselinin ortasına yaz
-  ctx.font = 'bold 24px Arial';
-  ctx.fillStyle = '#fffbea';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(
-    `${totalMoneyEarned}`,
-    moneyX + moneyWidth / 2,
-    moneyY + 6 + moneyHeight / 2
+  cizim.font = 'bold 24px Arial';
+  cizim.fillStyle = '#fffbea';
+  cizim.textAlign = 'left';
+  cizim.textBaseline = 'middle';
+  cizim.fillText(
+    `${toplamKazanilanPara}`,
+    paraX + paraGenislik / 2,
+    paraY + 6 + paraYukseklik / 2
   );
 
-  // Toplam satılan balık görseli ve sayısı
-  const soldFishX = moneyX + moneyWidth + 40;
-  const soldFishY = moneyY;
-  const soldFishWidth = 100;
-  const soldFishHeight = 100;
+  const satilanBalikX = paraX + paraGenislik + 40;
+  const satilanBalikY = paraY;
+  const satilanBalikGenislik = 100;
+  const satilanBalikYukseklik = 100;
 
-  if (totalSoldFishImage.complete) {
-    ctx.drawImage(totalSoldFishImage, soldFishX, soldFishY + 6, soldFishWidth, soldFishHeight);
+  if (toplamSatilanBalikResmi.complete) {
+    cizim.drawImage(toplamSatilanBalikResmi, satilanBalikX, satilanBalikY + 6, satilanBalikGenislik, satilanBalikYukseklik);
   }
 
-  // Toplam satılan balık sayısını görselin ortasına yaz
-  ctx.font = 'bold 24px Arial';
-  ctx.fillStyle = '#fffbea';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(
-    `${totalSoldFish}`,
-    soldFishX + soldFishWidth / 2,
-    soldFishY + 6 + soldFishHeight / 2
+  cizim.font = 'bold 24px Arial';
+  cizim.fillStyle = '#fffbea';
+  cizim.textAlign = 'left';
+  cizim.textBaseline = 'middle';
+  cizim.fillText(
+    `${toplamSatilanBalik}`,
+    satilanBalikX + satilanBalikGenislik / 2,
+    satilanBalikY + 6 + satilanBalikYukseklik / 2
   );
 }
 
-function update() {
-  // 🛍️ Mağaza modu
-  if (shopMode) {
-    if (keys['q'] || keys['Q']) {
-      shopMode = false;
-      keys['q'] = false;
-      keys['Q'] = false;
+// Oyun durumunu günceller
+function guncelle() {
+  // Mağaza modu
+  if (dukkanModu) {
+    if (tuslar['q'] || tuslar['Q']) {
+      dukkanModu = false;
+      tuslar['q'] = false;
+      tuslar['Q'] = false;
     }
 
-    if (keys['1'] && totalMoneyEarned >= 100) {
-      tekneAdam.speed += 1;
-      totalMoneyEarned -= 100;
-      keys['1'] = false;
+    if (tuslar['1'] && toplamKazanilanPara >= 100) {
+      tekneAdam.hiz += 1;
+      toplamKazanilanPara -= 100;
+      tuslar['1'] = false;
     }
 
-   if (keys['2'] && totalMoneyEarned >= 150 && fishCapacity < 15) {
-  fishCapacity += 1;
-  totalMoneyEarned -= 150;
-  keys['2'] = false;
-}
-
-    return; // Diğer modlara geçilmez
-  }
-
-  // 💰 Satış modu
-  if (sellingMode) {
-    if (sellingAnimationProgress < sellingAnimationMax) {
-      sellingAnimationProgress++;
-    }
-
-    if (keys['q'] || keys['Q']) {
-      sellingMode = false;
-      keys['q'] = false;
-      keys['Q'] = false;
+    if (tuslar['2'] && toplamKazanilanPara >= 150 && balikKapasitesi < 15) {
+      balikKapasitesi += 1;
+      toplamKazanilanPara -= 150;
+      tuslar['2'] = false;
     }
 
     return;
   }
 
-  // 🎣 Balık tutma modu
-  if (fishingMode) {
-    player.update(keys);
-
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-      obstacles[i].update();
-
-   if (checkCollision(player, obstacles[i])) {
-  if (collectedFish.length < fishCapacity) {
-    collectedFish.push(obstacles[i].fishType);
-    yakalamaSound.play();
-    obstacles.splice(i, 1);
-
-    if (collectedFish.length >= fishCapacity) {
-      fishingMode = false;
-      obstacles = [];
-      player = new Player();
-      frameCount = 0;
-      return; // <--- EKLEYİN! Fonksiyonu burada bitiriyoruz
+  // Satış modu
+  if (satisModu) {
+    if (satisAnimasyonIlerleme < satisAnimasyonMaks) {
+      satisAnimasyonIlerleme++;
     }
-  } else {
-    obstacles.splice(i, 1);
+
+    if (tuslar['q'] || tuslar['Q']) {
+      satisModu = false;
+      tuslar['q'] = false;
+      tuslar['Q'] = false;
+    }
+
+    return;
   }
-} else if (obstacles[i].y > canvas.height) {
-        obstacles.splice(i, 1);
+
+  // Balık tutma modu
+  if (balikTutmaModu) {
+    oyuncu.guncelle(tuslar);
+
+    for (let i = engeller.length - 1; i >= 0; i--) {
+      engeller[i].guncelle();
+
+      if (carpistiMi(oyuncu, engeller[i])) {
+        if (toplananBaliklar.length < balikKapasitesi) {
+          toplananBaliklar.push(engeller[i].balikTuru);
+          yakalamaSesi.play();
+          engeller.splice(i, 1);
+
+          if (toplananBaliklar.length >= balikKapasitesi) {
+            balikTutmaModu = false;
+            engeller = [];
+            oyuncu = new Oyuncu();
+            kareSayaci = 0;
+            return;
+          }
+        } else {
+          engeller.splice(i, 1);
+        }
+      } else if (engeller[i].y > tuval.height) {
+        engeller.splice(i, 1);
       }
     }
 
-    if (frameCount % obstacleInterval === 0) {
-      generateObstacle();
+    if (kareSayaci % engelAraligi === 0) {
+      engelUret();
     }
 
-    frameCount++;
-    fishingBackgroundOffsetY += 0.5;
-    if (fishingBackgroundOffsetY > fishingBackground.height) {
-      fishingBackgroundOffsetY = 0;
+    kareSayaci++;
+    balikTutmaArkaPlanOfsetY += 0.5;
+    if (balikTutmaArkaPlanOfsetY > balikTutmaArkaPlan.height) {
+      balikTutmaArkaPlanOfsetY = 0;
     }
 
-    if (keys['q'] || keys['Q']) {
-      fishingMode = false;
-      keys['q'] = false;
-      keys['Q'] = false;
-      obstacles = [];
+    if (tuslar['q'] || tuslar['Q']) {
+      balikTutmaModu = false;
+      tuslar['q'] = false;
+      tuslar['Q'] = false;
+      engeller = [];
     }
 
     return;
   }
 
-  // 🚤 Tekne (normal) modu
-  tekneAdam.update(keys);
+  // Normal tekne modu
+  tekneAdam.guncelle(tuslar);
 
-  waveOffsetX -= waveSpeed;
-  normalBackgroundOffsetX += normalScrollSpeed;
-  if (normalBackgroundOffsetX > canvas.width) {
-    normalBackgroundOffsetX = 0;
+  dalgaOfsetX -= dalgaHiz;
+  normalArkaPlanOfsetX += normalKaydirmaHizi;
+  if (normalArkaPlanOfsetX > tuval.width) {
+    normalArkaPlanOfsetX = 0;
   }
 
-  if ((keys['e'] || keys['E']) && tekneAdam.isAtLeftEdge()) {
-    if (collectedFish.length < fishCapacity) {
-      fishingMode = true;
-      fishingSound.play();
+  // Balık tutma başlatma
+  if ((tuslar['e'] || tuslar['E']) && tekneAdam.soldaMi()) {
+    if (toplananBaliklar.length < balikKapasitesi) {
+      balikTutmaModu = true;
+      balikTutmaSesi.play();
     } else {
-      uyariSound.play();
+      uyariSesi.play();
     }
-    keys['e'] = false;
-    keys['E'] = false;
+    tuslar['e'] = false;
+    tuslar['E'] = false;
   }
 
-  if ((keys['e'] || keys['E']) && tekneAdam.isAtRightEdge()) {
-  sellingMode = true;
-  sellSound.play();
+  // Balık satma başlatma
+  if ((tuslar['e'] || tuslar['E']) && tekneAdam.sagdaMi()) {
+    satisModu = true;
+    satisSesi.play();
 
-  sellingAnimationProgress = 0;
-  animateMoney = 0;
-  lastSoldFish = [...collectedFish];
-  totalSoldFish += collectedFish.length;
+    satisAnimasyonIlerleme = 0;
+    animasyonPara = 0;
+    sonSatilanBaliklar = [...toplananBaliklar];
+    toplamSatilanBalik += toplananBaliklar.length;
 
-  // OYUN BİTİŞ KONTROLÜ
-  if (totalSoldFish >= 100) {
-    gameOver = true;
+    if (toplamSatilanBalik >= 100) {
+      oyunBitti = true;
+    }
+
+    for (const balik of toplananBaliklar) {
+      toplamKazanilanPara += balik.deger;
+    }
+    toplananBaliklar = [];
+
+    tuslar['e'] = false;
+    tuslar['E'] = false;
   }
 
-  for (const fish of collectedFish) {
-    totalMoneyEarned += fish.value;
+  // Dükkan aç/kapat
+  if ((tuslar['e'] || tuslar['E']) && tekneAdam.ortadaMi()) {
+    dukkanModu = !dukkanModu;
+    tuslar['e'] = false;
+    tuslar['E'] = false;
   }
-  collectedFish = [];
-
-  keys['e'] = false;
-  keys['E'] = false;
 }
 
-  if ((keys['e'] || keys['E']) && tekneAdam.isAtCenter()) {
-    shopMode = !shopMode;
-    keys['e'] = false;
-    keys['E'] = false;
-  }
-}
+// Oyun ekranını çizer
+function ciz() {
+  cizim.clearRect(0, 0, tuval.width, tuval.height);
 
+  // Başlangıç ekranı
+  if (!oyunBasladi) {
+    cizim.fillStyle = 'rgba(30,60,100,0.85)';
+    cizim.fillRect(0, 0, tuval.width, tuval.height);
 
+    cizim.fillStyle = '#fff';
+    cizim.font = 'bold 48px Arial';
+    cizim.textAlign = 'center';
+    cizim.fillText('Balıkçı Oyunu', tuval.width / 2, tuval.height / 2 - 120);
 
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    cizim.font = '28px Arial';
+    cizim.textAlign = 'left';
+    const nasil = [
+      "Nasıl Oynanır?",
+      "- Sağ/Sol ok tuşları ile tekneyi hareket ettir.",
+      "- E tuşu ile balık tut veya sat.",
+      "- Q tuşu ile balık tutmayı bırak veya satıştan çık.",
+      "- Balık kapasiten dolunca tekneye dönüp balıkları sat.",
+      "- 100 balık sattığında oyun biter."
+    ];
+    let y = tuval.height / 2 - 60;
+    for (const satir of nasil) {
+      cizim.fillText(satir, tuval.width / 2 - 260, y);
+      y += 40;
+    }
 
-  // Oyun başlamadıysa sadece başlat ekranını göster
+    cizim.textAlign = 'center';
+    cizim.font = '32px Arial';
+    cizim.fillText('Başlamak için "Oyuna Başla" butonuna tıkla', tuval.width / 2, tuval.height / 2 + 140);
 
-  if (!gameStarted) {
-  ctx.fillStyle = 'rgba(30,60,100,0.85)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 48px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('Balıkçı Oyunu', canvas.width / 2, canvas.height / 2 - 120);
-
-  ctx.font = '28px Arial';
-  ctx.textAlign = 'left';
-  const howTo = [
-    "Nasıl Oynanır?",
-    "- Sağ/Sol ok tuşları ile tekneyi hareket ettir.",
-    "- E tuşu ile balık tut veya sat.",
-    "- Q tuşu ile balık tutmayı bırak veya satıştan çık.",
-    "- Balık kapasiten dolunca tekneye dönüp balıkları sat.",
-    "- 100 balık sattığında oyun biter."
-  ];
-  let y = canvas.height / 2 - 60;
-  for (const line of howTo) {
-    ctx.fillText(line, canvas.width / 2 - 260, y);
-    y += 40;
-  }
-
-  ctx.textAlign = 'center';
-  ctx.font = '32px Arial';
-  ctx.fillText('Başlamak için "Oyuna Başla" butonuna tıkla', canvas.width / 2, canvas.height / 2 + 140);
-
-  return;
-}
-
-  if (gameOver) {
-    ctx.fillStyle = 'rgba(0,0,0,0.85)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 64px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Oyun Bitti!', canvas.width / 2, canvas.height / 2 - 40);
-
-    ctx.font = '32px Arial';
-    ctx.fillText(`Toplam Kazanç: ₺${totalMoneyEarned}`, canvas.width / 2, canvas.height / 2 + 30);
-    ctx.fillText('Yeniden başlatmak için sayfayı yenileyin.', canvas.width / 2, canvas.height / 2 + 90);
     return;
   }
 
- if (shopMode) {
-  // Shop arka plan fotoğrafı
-  if (shopBgImage.complete) {
-    ctx.drawImage(shopBgImage, 0, 0, canvas.width, canvas.height);
-  } else {
-    // Fotoğraf yüklenmediyse sade bir renk kullan
-    ctx.fillStyle = "#232526";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // Oyun bitti ekranı
+  if (oyunBitti) {
+    cizim.fillStyle = 'rgba(0,0,0,0.85)';
+    cizim.fillRect(0, 0, tuval.width, tuval.height);
+
+    cizim.fillStyle = '#fff';
+    cizim.font = 'bold 64px Arial';
+    cizim.textAlign = 'center';
+    cizim.fillText('Oyun Bitti!', tuval.width / 2, tuval.height / 2 - 40);
+
+    cizim.font = '32px Arial';
+    cizim.fillText(`Toplam Kazanç: ₺${toplamKazanilanPara}`, tuval.width / 2, tuval.height / 2 + 30);
+    cizim.fillText('Yeniden başlatmak için sayfayı yenileyin.', tuval.width / 2, tuval.height / 2 + 90);
+    return;
   }
 
-  ctx.fillStyle = 'white';
-  ctx.font = '36px Arial';
-  ctx.fillText('Tersane', canvas.width / 2 - 80, 60);
-
-  ctx.font = '24px Arial';
-  ctx.fillText(`1.  Tekne Hızını Artır - 100₺ (1 tuşu)  ➤ Şu an: ${tekneAdam.speed}`, 100, 150);
-  ctx.fillText(`2. Balık Kapasitesini Artır (max 15) - 150₺ (2 tuşu)  ➤ Şu an: ${fishCapacity}`, 100, 200);
-
-  ctx.fillStyle = '#ffff66';
-  ctx.fillText(`Paran: ${totalMoneyEarned}₺`, 100, 270);
-
-  ctx.fillStyle = 'white';
-  ctx.fillText('Q tuşuna basarak çık', 100, 350);
-
-  return;
-}
-
-  if (!fishingMode && !sellingMode) {
-    // 🚤 Normal Mod (Teknedeyken)
-    if (normalBackground.complete) {
-      const x = -normalBackgroundOffsetX;
-      ctx.drawImage(normalBackground, x, 0, canvas.width, canvas.height);
-      ctx.drawImage(normalBackground, x + canvas.width, 0, canvas.width, canvas.height);
+  // Dükkan ekranı
+  if (dukkanModu) {
+    if (dukkanArkaPlanResmi.complete) {
+      cizim.drawImage(dukkanArkaPlanResmi, 0, 0, tuval.width, tuval.height);
     } else {
-      ctx.fillStyle = '#569cdd';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      cizim.fillStyle = "#232526";
+      cizim.fillRect(0, 0, tuval.width, tuval.height);
     }
 
-    if (leftImage.complete) {
-      const imgWidth = 400;
-      const imgHeight = 400;
-      const imgX = 0;
-      const imgY = canvas.height - waveFrameHeight - imgHeight + 180;
-      ctx.drawImage(leftImage, imgX, imgY, imgWidth, imgHeight);
+    cizim.fillStyle = 'white';
+    cizim.font = '36px Arial';
+    cizim.fillText('Tersane', tuval.width / 2 - 80, 60);
+
+    cizim.font = '24px Arial';
+    cizim.fillText(`1.  Tekne Hızını Artır - 100₺ (1 tuşu)  ➤ Şu an: ${tekneAdam.hiz}`, 100, 150);
+    cizim.fillText(`2. Balık Kapasitesini Artır (max 15) - 150₺ (2 tuşu)  ➤ Şu an: ${balikKapasitesi}`, 100, 200);
+
+    cizim.fillStyle = '#ffff66';
+    cizim.fillText(`Paran: ${toplamKazanilanPara}₺`, 100, 270);
+
+    cizim.fillStyle = 'white';
+    cizim.fillText('Q tuşuna basarak çık', 100, 350);
+
+    return;
+  }
+
+  // Oyun oynanışı ekranı
+  if (!balikTutmaModu && !satisModu) {
+    if (normalArkaPlan.complete) {
+      const x = -normalArkaPlanOfsetX;
+      cizim.drawImage(normalArkaPlan, x, 0, tuval.width, tuval.height);
+      cizim.drawImage(normalArkaPlan, x + tuval.width, 0, tuval.width, tuval.height);
+    } else {
+      cizim.fillStyle = '#569cdd';
+      cizim.fillRect(0, 0, tuval.width, tuval.height);
     }
 
-    if (rightImage.complete) {
-      const imgWidth = 400;
-      const imgHeight = 400;
-      const imgX = canvas.width - imgWidth;
-      const imgY = canvas.height - waveFrameHeight - imgHeight + 140;
-      ctx.drawImage(rightImage, imgX, imgY, imgWidth, imgHeight);
+    if (solResim.complete) {
+      const resimGenislik = 400;
+      const resimYukseklik = 400;
+      const resimX = 0;
+      const resimY = tuval.height - dalgaKareYukseklik - resimYukseklik + 180;
+      cizim.drawImage(solResim, resimX, resimY, resimGenislik, resimYukseklik);
     }
 
-    if (waveSprite.complete) {
-      const waveY = canvas.height - waveFrameHeight;
-      for (let x = waveOffsetX % waveSprite.width - waveSprite.width; x < canvas.width; x += waveSprite.width) {
-        ctx.drawImage(waveSprite, x, waveY, waveSprite.width, waveFrameHeight);
+    if (sagResim.complete) {
+      const resimGenislik = 400;
+      const resimYukseklik = 400;
+      const resimX = tuval.width - resimGenislik;
+      const resimY = tuval.height - dalgaKareYukseklik - resimYukseklik + 140;
+      cizim.drawImage(sagResim, resimX, resimY, resimGenislik, resimYukseklik);
+    }
+
+    if (dalgaSprite.complete) {
+      const dalgaY = tuval.height - dalgaKareYukseklik;
+      for (let x = dalgaOfsetX % dalgaSprite.width - dalgaSprite.width; x < tuval.width; x += dalgaSprite.width) {
+        cizim.drawImage(dalgaSprite, x, dalgaY, dalgaSprite.width, dalgaKareYukseklik);
       }
     }
 
-    if (centerImage.complete) {
-      const imgWidth = 400;
-      const imgHeight = 400;
-      const imgX = (canvas.width - imgWidth) / 2;
-      const imgY = (canvas.height - imgHeight) / 2 + 50;
-      ctx.drawImage(centerImage, imgX, imgY, imgWidth, imgHeight);
+    if (ortaResim.complete) {
+      const resimGenislik = 400;
+      const resimYukseklik = 400;
+      const resimX = (tuval.width - resimGenislik) / 2;
+      const resimY = (tuval.height - resimYukseklik) / 2 + 50;
+      cizim.drawImage(ortaResim, resimX, resimY, resimGenislik, resimYukseklik);
     }
 
-    tekneAdam.draw();
-    
-    drawFishAndMoneyCounter(ctx);
+    tekneAdam.ciz();
+    balikParaSayacCiz(cizim);
 
-  } else if (fishingMode) {
-    // 🎣 Balık Tutma Modu
-    if (fishingBackground.complete) {
-      const y = -fishingBackgroundOffsetY;
-      ctx.drawImage(fishingBackground, 0, y, canvas.width, fishingBackground.height);
-      ctx.drawImage(fishingBackground, 0, y + fishingBackground.height, canvas.width, fishingBackground.height);
+  } else if (balikTutmaModu) {
+    // Balık tutma ekranı
+    if (balikTutmaArkaPlan.complete) {
+      const y = -balikTutmaArkaPlanOfsetY;
+      cizim.drawImage(balikTutmaArkaPlan, 0, y, tuval.width, balikTutmaArkaPlan.height);
+      cizim.drawImage(balikTutmaArkaPlan, 0, y + balikTutmaArkaPlan.height, tuval.width, balikTutmaArkaPlan.height);
     } else {
-      ctx.fillStyle = '#2b6ca3';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      cizim.fillStyle = '#2b6ca3';
+      cizim.fillRect(0, 0, tuval.width, tuval.height);
     }
 
-    player.draw();
-    obstacles.forEach(o => o.draw(ctx));
-    
+    oyuncu.ciz();
+    engeller.forEach(o => o.ciz(cizim));
 
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.fillText('Q tuşuna basarak tekneye dön', 10, 100);
-    drawFishAndMoneyCounter(ctx);
+    cizim.fillStyle = 'white';
+    cizim.font = '20px Arial';
+    cizim.fillText('Q tuşuna basarak tekneye dön', 10, 100);
+    balikParaSayacCiz(cizim);
 
-  } else if (sellingMode) {
-    // 💰 Satış Ekranı
-    // Arka plana fotoğraf ekle
-    if (sellBgImage.complete) {
-      ctx.drawImage(sellBgImage, 0, 0, canvas.width, canvas.height);
+  } else if (satisModu) {
+    // Satış ekranı
+    if (satisArkaPlanResmi.complete) {
+      cizim.drawImage(satisArkaPlanResmi, 0, 0, tuval.width, tuval.height);
     } else {
-      // Fotoğraf yüklenmediyse sade bir renk kullan
-      ctx.fillStyle = "#e0ecff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      cizim.fillStyle = "#e0ecff";
+      cizim.fillRect(0, 0, tuval.width, tuval.height);
     }
 
-    ctx.fillStyle = '#fff'; // Koyu gri yazı
-    ctx.font = '32px Arial';
-    ctx.fillText('Balıklar satıldı!', 50, 50);
+    cizim.fillStyle = '#fff';
+    cizim.font = '32px Arial';
+    cizim.fillText('Balıklar satıldı!', 50, 50);
 
-
-    ctx.font = '20px Arial';
-    const lineHeight = 30;
-    let startY = 90;
+    cizim.font = '20px Arial';
+    const satirYukseklik = 30;
+    let baslangicY = 90;
     let index = 1;
-    let total = 0;
+    let toplam = 0;
 
-    if (lastSoldFish && lastSoldFish.length > 0) {
-      for (const fish of lastSoldFish) {
-        ctx.fillText(`${index}. ${fish.name} - ₺${fish.value}`, 60, startY);
-        total += fish.value;
-        startY += lineHeight;
+    if (sonSatilanBaliklar && sonSatilanBaliklar.length > 0) {
+      for (const balik of sonSatilanBaliklar) {
+        cizim.fillText(`${index}. ${balik.ad} - ₺${balik.deger}`, 60, baslangicY);
+        toplam += balik.deger;
+        baslangicY += satirYukseklik;
         index++;
       }
 
-      ctx.font = '22px Arial';
-      if (sellingAnimationProgress < sellingAnimationMax) {
-        animateMoney += total / sellingAnimationMax;
-        sellingAnimationProgress++;
+      cizim.font = '22px Arial';
+      if (satisAnimasyonIlerleme < satisAnimasyonMaks) {
+        animasyonPara += toplam / satisAnimasyonMaks;
+        satisAnimasyonIlerleme++;
       } else {
-        animateMoney = total;
+        animasyonPara = toplam;
       }
 
-      ctx.fillText(`Toplam Kazanç: ₺${Math.floor(animateMoney)}`, 60, startY + 20);
-      ctx.fillText(`Toplam Satılan Balık: ${lastSoldFish.length}`, 60, startY + 50);
+      cizim.fillText(`Toplam Kazanç: ₺${Math.floor(animasyonPara)}`, 60, baslangicY + 20);
+      cizim.fillText(`Toplam Satılan Balık: ${sonSatilanBaliklar.length}`, 60, baslangicY + 50);
     } else {
-      ctx.fillText('Satacak balık yok.', 60, startY);
+      cizim.fillText('Satacak balık yok.', 60, baslangicY);
     }
 
-    ctx.fillText('Q tuşuna basarak devam et', 60, startY + 90);
-}
-}
-
-
-
-function gameLoop() {
-  update();
-  draw();
-  requestAnimationFrame(gameLoop);
+    cizim.fillText('Q tuşuna basarak devam et', 60, baslangicY + 90);
+  }
 }
 
+// Oyun döngüsü (her karede güncelle ve çiz)
+function oyunDongusu() {
+  guncelle();
+  ciz();
+  requestAnimationFrame(oyunDongusu);
+}
 
-// 🎵 Müziği başlatmayı dene
-backgroundMusic.play().catch(() => {
-  // Otomatik oynatma engellenirse ilk tuşla başlat
+// Arka plan müziğini otomatik başlat (tarayıcı engellerse ilk tuşla başlat)
+arkaPlanMuzik.play().catch(() => {
   document.addEventListener('keydown', () => {
-    backgroundMusic.play();
+    arkaPlanMuzik.play();
   }, { once: true });
 });
 
-document.addEventListener('keydown', function startGameOnce() {
-  if (!gameStarted) {
-    gameStarted = true;
-    // Eğer müzik otomatik başlamadıysa burada başlatabilirsin
-    backgroundMusic.play();
+// Oyun ilk tuşa basınca başlasın
+document.addEventListener('keydown', function oyunBaslatBirKere() {
+  if (!oyunBasladi) {
+    oyunBasladi = true;
+    arkaPlanMuzik.play();
   }
 }, { once: true });
 
-gameLoop();
-
+// Oyun döngüsünü başlat
+oyunDongusu();
