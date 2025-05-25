@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scale the Depths</title>
+  <link rel="stylesheet" href="style.css" />
+ <style>
+  #startOverlay {
+    position: fixed;
+    left: 0; top: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(135deg, #3a1c71 0%, #007cf0 60%, #00dfd8 100%);
+    z-index: 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #startBtn {
+    font-size: 2.2rem;
+    padding: 24px 60px;
+    background: linear-gradient(90deg, #1a3a5d 0%, #3ec6e0 100%);
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(30,60,100,0.25);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.3s;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    letter-spacing: 1px;
+    font-weight: bold;
+    z-index: 10;
+  }
+  #startBtn:hover {
+    transform: scale(1.07);
+    box-shadow: 0 12px 40px rgba(30,60,100,0.35);
+    background: linear-gradient(90deg, #3ec6e0 0%, #1a3a5d 100%);
+  }
+</style>
+</head>
+<body>
+  <div id="startOverlay">
+    <button id="startBtn">Oyuna Başla</button>
+  </div>
+
+  <div id="howToPlay" style="
+  display:none;
+  position:fixed;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(255,255,255,0.95);
+  color:#222;
+  padding:32px 40px;
+  border-radius:18px;
+  font-size:1.25rem;
+  box-shadow:0 8px 32px rgba(30,60,100,0.18);
+  z-index:20;
+  max-width:480px;
+  text-align:left;
+">
+  <b>Nasıl Oynanır?</b><br><br>
+  <ul style="margin:0 0 0 18px; padding:0;">
+    <li><b>Sağ/Sol ok tuşları</b> ile tekneyi hareket ettir.</li>
+    <li><b>E</b> tuşu ile balık tut veya sat.</li>
+    <li><b>Q</b> tuşu ile balık tutmayı bırak veya satıştan çık.</li>
+    <li>Balık kapasiten dolunca tekneye dönüp balıkları sat.</li>
+    <li>Kazandığın para ile tekneni geliştir.</li>
+    <li><b>100</b> balık sattığında oyun biter.</li>
+  </ul>
+  <div style="text-align:center; margin-top:18px;">
+    <button id="howToCloseBtn" style="
+      font-size:1.1rem; padding:10px 28px; border:none; border-radius:10px;
+      background:#3ec6e0; color:#fff; cursor:pointer; font-weight:bold;">
+      Tamam
+    </button>
+  </div>
+</div>
+
+  <canvas id="gameCanvas" width="1280" height="720"></canvas>
+  <script src="player.js"></script>
+  <script src="obstacle.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
