@@ -11,14 +11,14 @@ Balıkcıya tıklayarak oyuna ulaşabilirsiniz.
 
 ## Özellikler
 
-- Sağ/sol ok tuşları ile tekneyi hareket ettirme
-- E tuşu ile balık tutma veya balık satma moduna geçiş
-- Q tuşu ile balık tutmayı bırakma veya satış ekranından çıkış
-- Balık kapasitesi ve para sistemi
-- Tersane ekranı: Tekne hızını ve balık kapasitesini artırma
-- Satış ekranı: Balık Satışı ve animasyonlu kazanç gösterimi
-- Modern ve görsel açıdan zengin arayüz
-- 100 balık sattığınızda oyun biter
+- Sağ/sol ok tuşları ile tekneyi hareket ettirme.
+- E tuşu ile balık tutma veya balık satma moduna geçiş.
+- Q tuşu ile balık tutmayı bırakma veya satış ekranından çıkış.
+- Balık kapasitesi ve para sistemi.
+- Tersane ekranı: Tekne hızını ve balık kapasitesini artırma.
+- Satış ekranı: Balık Satışı ve animasyonlu kazanç gösterimi.
+- Modern ve görsel açıdan zengin arayüz.
+- 100 balık sattığınızda oyun biter.
 
 
 ## Nasıl Oynanır?
