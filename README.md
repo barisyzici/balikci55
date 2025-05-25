@@ -34,7 +34,10 @@ Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkç�
 
 ## Ekran Görüntüleri
 
-![Oyun Ekranı](assets/ekran_goruntusu.png)
+![Oyun Ekranı](assets/oyun-gorseli/tekne_ekrani.png)
+![Oyun Ekranı](assets/oyun-gorseli/deniz_alti_ekrani.png)
+![Oyun Ekranı](assets/oyun-gorseli/satis_ekrani.png)
+![Oyun Ekranı](assets/oyun-gorseli/tersane_ekrani.png)
 
 ## Katkı ve Lisans
 
