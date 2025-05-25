@@ -9,9 +9,10 @@ Bu proje, HTML5 Canvas ve JavaScript kullanılarak geliştirilmiş bir balıkç�
 - Q tuşu ile balık tutmayı bırakma veya satış ekranından çıkış
 - Balık kapasitesi ve para sistemi
 - Tersane ekranı: Tekne hızını ve balık kapasitesini artırma
-- Satış ekranı ve animasyonlu kazanç gösterimi
-- 100 balık sattığınızda oyun biter
+- Satış ekranı: Balık Satışı ve animasyonlu kazanç gösterimi
 - Modern ve görsel açıdan zengin arayüz
+- 100 balık sattığınızda oyun biter
+
 
 ## Nasıl Oynanır?
 
