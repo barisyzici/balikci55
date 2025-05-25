@@ -1,0 +1,12 @@
+/* style.css */
+body {
+    margin: 0;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #99c1e9, #569cdd);
+  }
+  
+ canvas {
+  display: block;
+  margin: auto;
+  background-color: #569cdd; /* arka plan JS ile çizildiği için sadece renk */
+}
