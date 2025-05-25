@@ -1,22 +1,27 @@
-class Player {
+// Oyuncu (kanca) sınıfı
+class Oyuncu {
   constructor() {
-    this.width = 70;
-    this.height = 70;
-    this.x = canvas.width / 2 - this.width / 2;
-    this.y = canvas.height - this.height - 10;
-    this.speed = 4;
-    this.image = new Image();
-    this.image.src = 'assets/kanca.png'; // Kanca görselinin yolu
+    // Oyuncunun boyut ve başlangıç konumu
+    this.genislik = 70;
+    this.yukseklik = 70;
+    this.x = tuval.width / 2 - this.genislik / 2;
+    this.y = tuval.height - this.yukseklik - 10;
+    this.hiz = 4;
+    // Kanca görseli
+    this.resim = new Image();
+    this.resim.src = 'assets/kanca.png';
   }
 
-  draw() {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  // Oyuncuyu ekrana çizer
+  ciz() {
+    cizim.drawImage(this.resim, this.x, this.y, this.genislik, this.yukseklik);
   }
 
-  update(keys) {
-    if (keys['ArrowLeft'] && this.x > 0) this.x -= this.speed;
-    if (keys['ArrowRight'] && this.x + this.width < canvas.width) this.x += this.speed;
-    if (keys['ArrowUp'] && this.y > 0) this.y -= this.speed;
-    if (keys['ArrowDown'] && this.y + this.height < canvas.height) this.y += this.speed;
+  // Oyuncunun hareketini günceller
+  guncelle(tuslar) {
+    if (tuslar['ArrowLeft'] && this.x > 0) this.x -= this.hiz;
+    if (tuslar['ArrowRight'] && this.x + this.genislik < tuval.width) this.x += this.hiz;
+    if (tuslar['ArrowUp'] && this.y > 0) this.y -= this.hiz;
+    if (tuslar['ArrowDown'] && this.y + this.yukseklik < tuval.height) this.y += this.hiz;
   }
 }
